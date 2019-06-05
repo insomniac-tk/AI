@@ -1,6 +1,3 @@
-"""This module serves as the BaseClass for all the problems. I have used this from the aima code online.
-"""
-
 class Problem(object):
 
     """The abstract class for a formal problem. You should subclass
@@ -100,7 +97,79 @@ class Node:
 Depth-First-Search,A-Star, Sliding puzzle etc."""
 
 
-class EightPuzzleProblem(Problem):
+class EightPuzzle(Problem):
+    """ The problem of sliding tiles numbered from 1 to 8 on a 3x3 board,
+    where one of the squares is a blank. A state is represented as a tuple of length 9,
+    where element at index i represents the tile number  at index i (0 if it's an empty square) """
 
-      pass
+    def __init__(self,initial,goal):
+        super().__init__(initial,goal)
+        print("New EightPuzzle Problem instance created.")
+    
+    @staticmethod
+    def matrix_rep(state):
+        x = list(state)
+        return x
+            
+    
+    def __repr__(self):
+        return "Initial State:{},Goal:{},\n Matrix Representation : \n {}".format(self.matrix_rep(self.initial),matrix_rep(self.goal))
+    
 
+    def find_blank_square(self,state):
+        return state.index(0)
+    
+    def actions(self,state):
+        blank_square_index = find_blank_square(self.state)
+        possible_actions = ['LEFT','RIGHT','UP','DOWN']
+        
+        if blank_square_index%3 == 0:
+            possible_actions.remove('LEFT')
+        if blank_square_index%3 == 2:
+            possible_actions.remove('RIGHT')
+        if blank_square_index < 3:
+            possible_actions.remove('UP')
+        if blank_square_index > 5:
+            possible_actions.remove('DOWN')
+        return possible_actions
+
+    def result(self,state,action):
+        blank = self.find_blank_square(state) # Find blank square 
+        new_state = list(state)
+        delta = {'UP':-3,'DOWN':3,'LEFT':-1,'RIGHT':1}
+        neighbour = blank + delta[action]
+        new_state[blank],new_state[neighbour] = new_state[neighbour],new_state[blank]
+        return(tuple(new_state))        
+
+    def goal_test(self,state):
+        return state == self.goal
+    
+    def h(self,node):
+        '''
+             Number of misplaced tiles serves as a heuristic here
+             h(n) = no. of misplaced tiles
+        '''
+
+        return sum([p!=q for (p,q) in zip(node.state,self.goal)])
+
+
+def prettyprint(x):
+    for i in range(len(x)):
+        if i%3 == 2:
+            print(x[i])
+        else:
+            print(x[i],end='|')
+
+
+
+
+
+
+if __name__ == '__main__':
+    Test = EightPuzzle((0,4,1,3,8,2,5,6,7),(1,2,3,4,5,6,7,8,0))
+    print("Initial State: ")
+    prettyprint(Test.matrix_rep(Test.initial))
+    print("Goal State:")
+    prettyprint(Test.matrix_rep(Test.goal))
+    
+    
